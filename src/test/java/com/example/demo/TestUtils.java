@@ -12,7 +12,7 @@ public class TestUtils {
 
             //Reviewer(s): I am using Java 11! what is shown in the content which is:  "isAccessible()" was deprecated.
             //https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/reflect/AccessibleObject.html
-            if(!f.canAccess(target)){
+            if(!f.isAccessible()){
                 f.setAccessible(true);
                 wasPrivate = true;
             }
