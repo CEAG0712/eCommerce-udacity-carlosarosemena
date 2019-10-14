@@ -35,8 +35,6 @@ public class UserControllerTest {
 
 
 
-    @Autowired
-    private  EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;
@@ -52,7 +50,6 @@ public class UserControllerTest {
 
     @BeforeTransaction
     public void setUp(){
-        entityManager.clear();
         userController = new UserController();
 
         TestUtils.injectObject(userController, "userRepository", userRepository);
