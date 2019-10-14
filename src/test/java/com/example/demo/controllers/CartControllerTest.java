@@ -4,12 +4,10 @@ import com.example.demo.TestUtils;
 import com.example.demo.model.persistence.Cart;
 import com.example.demo.model.persistence.Item;
 import com.example.demo.model.persistence.User;
-import com.example.demo.model.persistence.UserOrder;
 import com.example.demo.model.persistence.repositories.CartRepository;
 import com.example.demo.model.persistence.repositories.ItemRepository;
-import com.example.demo.model.persistence.repositories.OrderRepository;
 import com.example.demo.model.persistence.repositories.UserRepository;
-import org.junit.AfterClass;
+import com.example.demo.model.requests.ModifyCartRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,24 +17,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class OrderControllerTest {
+public class CartControllerTest {
 
-
-
-    private OrderController orderController;
+    private CartController cartController;
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
 
     @Autowired
     private CartRepository cartRepository;
@@ -44,29 +37,32 @@ public class OrderControllerTest {
     @Autowired
     private ItemRepository itemRepository;
 
+
     private Cart tCart;
 
     private User tUser;
-    private String username = "username";
-    private String password = "password";
+    private String tUsername = "tUsername";
+    private String tPassword = "tPassword";
 
     private Item tItem;
-    private String tItemName = "testItem";
-    private BigDecimal tItemPrice = new BigDecimal(500.99);
-    private String tItemDescription = "testDescription";
+    private String tItemName = "tItem";
+    private BigDecimal tItemPrice = new BigDecimal(600.99);
+    private String tItemDescription = "tDescription";
+
 
     @Before
     public void setUp() {
-        orderController = new OrderController();
-        TestUtils.injectObject(orderController, "userRepository", userRepository);
-        TestUtils.injectObject(orderController, "orderRepository", orderRepository);
+        cartController = new CartController();
+        TestUtils.injectObject(cartController, "userRepository", userRepository);
+        TestUtils.injectObject(cartController, "cartRepository", cartRepository);
+        TestUtils.injectObject(cartController, "itemRepository", itemRepository);
 
-        tUser = userRepository.findByUsername(username);
 
         tUser = new User();
-        tUser.setUsername(username);
-        tUser.setPassword(password);
+        tUser.setUsername(tUsername);
+        tUser.setPassword(tPassword);
         userRepository.save(tUser);
+
 
 
         tItem = new Item();
@@ -75,6 +71,7 @@ public class OrderControllerTest {
         tItem.setPrice(tItemPrice);
         itemRepository.save(tItem);
 
+
         tCart = new Cart();
         tCart.setUser(tUser);
         tCart.addItem(tItem);
@@ -82,19 +79,27 @@ public class OrderControllerTest {
         cartRepository.save(tCart);
     }
 
-
-
     @Test
-    public void submit(){
-        ResponseEntity<UserOrder> response = orderController.submit(username);
+    public void addToCart(){
+        ModifyCartRequest request = new ModifyCartRequest();
+        request.setUsername(tUsername);
+        request.setItemId(tItem.getId());
+        int quantity = 2;
+        request.setQuantity(quantity);
+
+        ResponseEntity<Cart> response = cartController.addToCart(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, orderRepository.findAll().size());
     }
 
     @Test
-    public void getOrdersForUser(){
-        ResponseEntity responseEntity = orderController.getOrdersForUser(username);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    public void removeFromCart(){
+        ModifyCartRequest request = new ModifyCartRequest();
+        request.setUsername(tUsername);
+        request.setItemId(tItem.getId());
+        int quantity = 1;
+        request.setQuantity(quantity);
 
+        ResponseEntity<Cart> response = cartController.removeFromCart(request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }

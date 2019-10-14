@@ -37,8 +37,8 @@ public class UserController {
 	private static final Logger log = LogManager.getLogger(UserController.class);
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<User> findById(@PathVariable Long id) {
-		return ResponseEntity.of(userRepository.findById(id));
+	public ResponseEntity findById(@PathVariable Long id) {
+		return ResponseEntity.ok(userRepository.findById(id));
 	}
 	
 	@GetMapping("/{username}")
